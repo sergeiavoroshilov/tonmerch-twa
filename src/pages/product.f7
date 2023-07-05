@@ -1,0 +1,162 @@
+<template>
+  <div class="page" data-name="product">
+    <div class="page-content position-relative">
+      <tds-swiper images=${productImages()}></tds-swiper>
+
+      <tds-list class="media-list">
+        <li slot="items" class="item-content">
+          <div class="item-inner">
+            <div class="item-title-row">
+              <div class="item-title tds-text-color">
+                ${product.value ? $h`
+                  <span class="tds-title-2">${product.value.title}</span>
+                ` : $h`
+                  <span class="tds-title-2 skeleton-text skeleton-effect-wave">Product Title</span>
+                `}
+              </div>
+              <div class="item-after">
+                <span class="tds-title-2 tds-button-color">
+                  ${variant.value ? $h`
+                    <app-number type="currency" value=${variant.value.price} currency=${variant.value.currency}></app-number>
+                  ` : $h`
+                    <span class="skeleton-text skeleton-effect-wave">1000</span>
+                  `}
+                </span>
+              </div>
+            </div>
+            <div class="item-subtitle display-flex justify-content-space-between tds-hint-color tds-headline-2">
+              ${variant.value ? $h`
+                <span>${variant.value.title}</span>
+              ` : $h`
+                <span class="skeleton-text skeleton-effect-wave">Variant Title</span>
+              `}
+            </div>
+            <div class="item-text tds-text ${product.value ? 'tds-text-color' : 'skeleton-text skeleton-effect-wave'}" innerHTML=${product.value ? product.value.description : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, at dolor eius, assumenda ducimus eaque placeat consequuntur molestias dicta repellat sed facilis dolorum cumque consectetur, alias eligendi a quos asperiores!'}></div>
+          </div>
+        </li>
+      </tds-list>
+
+      ${options().map((option) => $h`
+        <tds-list>
+          <span slot="header">${$f7.$t('product:' + option.name)}</span>
+          <li slot="items" class="item-content">
+            <div class="item-inner item-cell">
+              <div class="item-row">
+                ${option.name === 'color' && $h`
+                  <div class="item-cell">
+                    ${option.values.map((optionValue) => $h`
+                      <tds-radio-color name=${option.name} value=${optionValue} color=${optionValue} checked=${variant.value.options[option.name] === optionValue} @change=${() => change(option.name, optionValue)}></tds-radio-color>
+                    `)}
+                  </div>
+                `}
+                ${option.name === 'size' && $h`
+                  <div class="item-cell display-flex flex-wrap justify-content-space-between">
+                    ${option.values.map((optionValue) => $h`
+                      <tds-radio-chip name=${option.name} value=${optionValue} title=${optionValue} checked=${variant.value.options[option.name] === optionValue} @change=${() => change(option.name, optionValue)}></tds-radio-chip>
+                    `)}
+                  </div>
+                `}
+                ${!['color', 'size'].includes(option.name) && $h`
+                  <div class="item-cell display-flex flex-wrap justify-content-space-between">
+                    ${option.values.map((optionValue) => $h`
+                      <tds-radio-chip name=${option.name} value=${optionValue} title=${optionValue} checked=${variant.value.options[option.name] === optionValue} @change=${() => change(option.name, optionValue)}></tds-radio-chip>
+                    `)}
+                  </div>
+                `}
+              </div>
+            </div>
+          </li>
+        </tds-list>
+      `)}
+
+      ${process.env.NODE_ENV === 'development' && $h`
+        <div class="block">
+          <button class="button button-fill" type="button" @click=${onMainButtonClick}>${$f7.$t('productItem:Add')}</button>
+        </div>
+      `}
+    </div>
+  </div>
+</template>
+
+<style>
+.page[data-name="product"] {
+  --f7-list-item-text-max-lines: 100;
+}
+</style>
+
+<script>
+export default (props, { $store, $f7, $el, $ref, $on }) => {
+  const product = $ref(null);
+  const productVariants = $ref([]);
+  const variant = $ref(null);
+
+  $on('pageBeforeIn', async () => {
+    const productId = props.id;
+    product.value = await $store.dispatch('getProduct', productId);
+    productVariants.value = product.value.variants;
+    variant.value = productVariants.value.find((variant) => variant.is_default) || productVariants.value[0];
+
+    $f7.on('mainButton:click', onMainButtonClick);
+    $f7.MainButton.setParams({
+      text: $f7.$t('productItem:Add'),
+      color: Telegram.WebApp.themeParams.button_color,
+      text_color: Telegram.WebApp.button_text_color,
+      is_active: true,
+      is_visible: true,
+    });
+  });
+
+  function productImages() {
+    if (variant.value) return variant.value.images;
+    if (product.value) return [product.value.image];
+    return [];
+  }
+
+  function options() {
+    const result = [];
+
+    productVariants.value.forEach((variant) => {
+      for (const optionName in variant.options) {
+        if (variant.options.hasOwnProperty(optionName)) {
+          const optionIndex = result.findIndex((option) => option.name === optionName);
+          let option;
+
+          if (optionIndex < 0) {
+            option = { name: optionName, values: new Set() };
+            result.push(option);
+          } else {
+            option = result[optionIndex];
+          }
+
+          option.values.add(variant.options[optionName]);
+        }
+      }
+    });
+    
+    result.forEach((option) => option.values = [...option.values]);
+    
+    return result;
+  }
+
+  function change(optionName, optionValue) {
+    const options = Object.assign({}, variant.value.options, { [optionName]: optionValue });
+    variant.value = productVariants.value.find((variant) => JSON.stringify(variant.options) === JSON.stringify(options));
+  }
+
+  function onMainButtonClick() {
+    $store.state.cart.push(variant.value);
+    $f7.emit('cartUpdated', $store.state.cart);
+    $f7.timerToast.show(() => {
+      $store.state.cart.pop();
+      $f7.emit('cartUpdated', $store.state.cart);
+    });
+  }
+
+  $on('pageBeforeOut', () => {
+    $f7.off('mainButton:click', onMainButtonClick);
+    $f7.timerToast.close();
+  });
+
+  return $render;
+}
+</script>

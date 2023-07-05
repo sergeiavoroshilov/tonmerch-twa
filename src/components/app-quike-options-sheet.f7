@@ -1,0 +1,179 @@
+<template>
+  <div class="app-quike-options-sheet sheet-modal sheet-init" data-backdrop="true" data-swipe-to-close="true" @sheet:open=${onOpen} @sheet:close=${onClose}>
+    ${product.value && $h`
+      <div class="sheet-modal-inner">
+        <div class="swipe-handler"></div>
+        <div class="app-quike-options-sheet__image" style="background-image: url('${variantImage()}');"></div>
+        <div class="app-quike-options-sheet__title-row tds-title-2 display-flex justify-content-space-between">
+          <div class="app-quike-options-sheet__title">${product.value.title}</div>
+          <div class="text-color-primary">
+            <app-number type="currency" value=${variant.value.price} currency=${variant.value.currency}></app-number>
+          </div>
+        </div>
+        <div class="app-quike-options-sheet__subtitle tds-subtitle-2 text-color-gray">${variant.value.title}</div>
+
+        <tds-list no-shadow>
+          <span slot="header">${$f7.$t('product:OptionsHeader')}</span>
+          ${options().map((option) => $h`
+            <li slot="items" class="item-content">
+              <div class="item-inner item-cell">
+                <div class="item-row">
+                  ${option.name === 'color' && $h`
+                  <div class="item-cell">
+                    ${option.values.map((optionValue) => $h`
+                      <tds-radio-color name=${option.name} value=${optionValue} color=${optionValue} checked=${variant.value.options[option.name] === optionValue} @change=${() => change(option.name, optionValue)}></tds-radio-color>
+                    `)}
+                  </div>
+                  `}
+                  ${option.name === 'size' && $h`
+                    <div class="item-cell display-flex flex-wrap justify-content-space-between">
+                      ${option.values.map((optionValue) => $h`
+                        <tds-radio-chip name=${option.name} value=${optionValue} title=${optionValue} checked=${variant.value.options[option.name] === optionValue} @change=${() => change(option.name, optionValue)}></tds-radio-chip>
+                      `)}
+                    </div>
+                  `}
+                  ${!['color', 'size'].includes(option.name) && $h`
+                    <div class="item-cell display-flex flex-wrap justify-content-space-between">
+                      ${option.values.map((optionValue) => $h`
+                        <tds-radio-chip name=${option.name} value=${optionValue} title=${optionValue} checked=${variant.value.options[option.name] === optionValue} @change=${() => change(option.name, optionValue)}></tds-radio-chip>
+                      `)}
+                    </div>
+                  `}
+                </div>
+              </div>
+            </li>
+          `)}
+        </tds-list>
+
+        ${process.env.NODE_ENV === 'development' && $h`
+          <div class="block no-margin-top">
+            <button class="button button-fill" type="button" @click=${onMainButtonClick}>${$f7.$t('productItem:Add')}</button>
+          </div>
+        `}
+      </div>
+    `}
+  </div>
+</template>
+
+<style>
+.app-quike-options-sheet .sheet-modal-inner {
+  padding-top: 18px;
+}
+.app-quike-options-sheet .app-quike-options-sheet__image {
+  position: absolute;
+  width: 39px;
+  height: 39px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  left: 20px;
+  background-color: var(--tg-theme-secondary-bg-color);
+}
+.app-quike-options-sheet .app-quike-options-sheet__title-row, 
+.app-quike-options-sheet .app-quike-options-sheet__subtitle {
+  margin: 0 20px;
+  margin-left: 69px;
+}
+.app-quike-options-sheet .swipe-handler {
+  position: absolute;
+  height: 4px;
+  width: 34px;
+  background: lightgrey;
+  top: 10px;
+  left: calc((100% - 34px) / 2);
+  border-radius: 2px;
+}
+</style>
+
+<script>
+export default (props, { $ref, $f7, $store, $emit, $tick }) => {
+  const product = $ref(null);
+  const productVariants = $ref([]);
+  const variant = $ref(null);
+
+  $f7.on('openQuikeOptionsSheet', (value) => {
+    product.value = value;
+    productVariants.value = product.value.variants;
+    variant.value = productVariants.value.find((variant) => variant.is_default) || productVariants.value[0];
+
+    $f7.sheet.open('.app-quike-options-sheet');
+  });
+
+  function variantImage() {
+    if (variant.value) return variant.value.images[0];
+    if (product.value) return product.value.image;
+  }
+
+  function options() {
+    const result = [];
+
+    productVariants.value.forEach((variant) => {
+      for (const optionName in variant.options) {
+        if (variant.options.hasOwnProperty(optionName)) {
+          const optionIndex = result.findIndex((option) => option.name === optionName);
+          let option;
+
+          if (optionIndex < 0) {
+            option = { name: optionName, values: new Set() };
+            result.push(option);
+          } else {
+            option = result[optionIndex];
+          }
+
+          option.values.add(variant.options[optionName]);
+        }
+      }
+    });
+    
+    result.forEach((option) => option.values = [...option.values]);
+    
+    return result;
+  }
+
+  function change(optionName, optionValue) {
+    const options = Object.assign({}, variant.value.options, { [optionName]: optionValue });
+    variant.value = productVariants.value.find((variant) => JSON.stringify(variant.options) === JSON.stringify(options));
+  }
+
+  function onOpen() {
+    $emit('open');
+    $tick(showMainButton);
+    $f7.timerToast.close();
+  }
+
+  function onClose() {
+    hideMainButton();
+    $emit('close');
+  }
+
+  function showMainButton() {
+    $f7.on('mainButton:click', onMainButtonClick);
+    $f7.MainButton.setParams({
+      text: $f7.$t('productItem:Add'),
+      color: Telegram.WebApp.themeParams.button_color,
+      text_color: Telegram.WebApp.button_text_color,
+      is_active: true,
+      is_visible: true,
+    });
+  }
+
+  function hideMainButton() {
+    $f7.off('mainButton:click', onMainButtonClick);
+  }
+
+  function onMainButtonClick() {
+    $store.state.cart.push(variant.value);
+    $f7.timerToast.show(() => {
+      $store.state.cart.pop();
+      if ($store.state.cart.length === 0) {
+        $emit('open');
+      }
+      $f7.emit('cartUpdated', $store.state.cart);
+    });
+    $f7.sheet.close('.app-quike-options-sheet');
+    $f7.emit('cartUpdated', $store.state.cart);
+  }
+
+  return $render;
+}
+</script>

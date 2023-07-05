@@ -1,0 +1,107 @@
+<template>
+  <li class="tds-country-smart-select">
+    <a class="item-link smart-select">
+      <select>
+        ${countries.map((group) => $h`
+          <optgroup>
+            ${group.map((country) => $h`
+              <option value=${country.code} data-display-as=${country.name} selected=${country.code === $store.state.shippingAddress?.country_code}>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                ${country.flag}
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                ${country.name}
+              </option>
+            `)}
+          </optgroup>
+        `)}
+      </select>
+      <div class="item-content">
+        <div class="item-inner">
+          <div class="item-title if-md">Japan</div>
+
+          <div class="item-title item-label if-ios">${$f7.$t('shipping:Country')}</div>
+          <div class="item-input-wrap if-ios">Japan</div>
+        </div>
+      </div>
+    </a>
+  </li>
+</template>
+
+<style>
+.md .tds-country-smart-select {
+  --f7-list-item-padding-horizontal: 20px;
+  --f7-list-item-title-font-size: 15px;
+  --f7-list-item-title-line-height: 18px;
+  --f7-list-item-min-height: 50px;
+  --f7-list-item-divider-height: 1px;
+  --f7-navbar-height: 0px;
+}
+.md .tds-country-smart-select .icon-radio {
+  display: none;
+}
+.md .tds-country-smart-select .item-divider:first-child {
+  display: none;
+}
+.md .tds-country-smart-select .list .item-inner:after {
+  display: none;
+}
+.ios {
+  --f7-navbar-height: 0px;
+}
+.navbar-inner .left, .navbar-inner .title {
+  display: none;
+}
+</style>
+
+<script>
+import countriesList from '@/js/countries.json';
+import { countryCodeEmoji } from 'country-code-emoji';
+
+export default (props, { $f7, $el, $on, $onMounted, $f7router, $store }) => {
+  const countriesFilter = (item) => item.country_code !== 'GO' && item.country_code !== 'YL';
+  const countries = countriesList.filter(countriesFilter).map((item) => ({
+    code: item.country_code,
+    name: item.country_name,
+    flag: countryCodeEmoji(item.country_code),
+  })).sort((a, b) => a.name.localeCompare(b.name)).reduce((list, current) => {
+    const group = list.find((group) => group[0]?.name[0] === current.name[0]);
+
+    if (group) {
+      group.push(current);
+    } else {
+      list.push([current]);
+    }
+
+    return list;
+  }, []);
+  let countrySmartSelect;
+
+  $onMounted(() => createCountrySmartSelect());
+
+  function createCountrySmartSelect() {
+    countrySmartSelect = $f7.smartSelect.create({
+      el: $el.value.find('.smart-select'),
+      valueEl: $f7.theme === 'md'
+        ? $el.value.find('.smart-select .item-title')
+        : $el.value.find('.smart-select .item-input-wrap'),
+      closeOnSelect: true,
+      searchbar: true,
+      cssClass: 'tds-country-smart-select no-hairlines-between',
+    });
+  }
+
+  $f7.on('smartSelectOpen', () => {
+    $f7.on('mainButton:click', onMainButtonClick);
+  });
+
+  $f7.on('smartSelectClose', () => {
+    $f7.off('mainButton:click', onMainButtonClick);
+  });
+
+  function onMainButtonClick() {
+    console.log(countrySmartSelect);
+  }
+
+  return $render;
+}
+</script>

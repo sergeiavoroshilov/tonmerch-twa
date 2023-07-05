@@ -1,0 +1,63 @@
+<template>
+  <div class="tds-swiper swiper swiper-init" data-pagination='{"el": ".swiper-pagination"}' data-loop="true" @click=${clickOnSwiper}>
+    <div class="swiper-pagination"></div>
+    <div class="swiper-wrapper"></div>
+  </div>
+</template>
+
+<style>
+.tds-swiper {
+  height: 100vw;
+}
+.tds-swiper .swiper-slide img {
+  width: 100%;
+  height: 100%;
+}
+.tds-swiper .swiper-pagination {
+  display: flex;
+  top: 4px;
+  bottom: auto;
+  justify-content: space-between;
+  padding: 0 4px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.tds-swiper .swiper-pagination .swiper-pagination-bullet {
+  flex: auto 1 1;
+  height: 2px;
+  border-radius: 1px;
+  margin: 0 2px;
+}
+.tds-swiper .swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active {
+  background-color: white;
+}
+</style>
+
+<script>
+export default (props, { $f7, $el, $onBeforeUpdate }) => {
+  $onBeforeUpdate(() => {
+    const swiper = $f7.swiper.get($el.value);
+    const slides = props.images.map((imageUrl) => `
+      <div class="swiper-slide">
+        <img src="${imageUrl}"/>
+      </div>
+    `);
+
+    swiper.removeAllSlides();
+    swiper.appendSlide(slides);
+    swiper.slideTo(1);
+  });
+
+  function clickOnSwiper(event) {
+    const swiper = $f7.swiper.get($el.value);
+
+    if (event.offsetX / $f7.width > 0.3) {
+      swiper.slideNext();
+    } else {
+      swiper.slidePrev();
+    }
+  }
+
+  return $render;
+}
+</script>

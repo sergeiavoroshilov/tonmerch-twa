@@ -1,0 +1,61 @@
+{
+  "checkout": {
+    "Total": "Итого",
+    "PaymentMethod": "Способ оплаты",
+    "PaymentMethodIos": "Способ оплаты",
+    "ShippingAddress": "Адрес доставки",
+    "ShippingAddressIos": "Информация о доставке",
+    "Delivery": "Доставка",
+    "ConfirmDialogTitle": "Оформить заказ",
+    "ConfirmDialogText": "Подтвердить оформление заказа #{{orderId}} на сумму {{total, number(minimumFractionDigits: 2; maximumFractionDigits: 2)}} TON и перейти к оплате",
+    "ConfirmDialogButton": "Продолжить",
+    "PromoCode": "Промокод",
+    "Apply": "Применить",
+    "Discount": "Скидка",
+    "ErrorPromoCodeExpired": "Срок действия промокода истек",
+    "ErrorPromoCodeUsed": "Промокод уже использован",
+    "ErrorPromoCodeInvalid": "Недействительный промокод"
+  },
+  "shipping": {
+    "AddressTitle": "Адрес доставки",
+    "Address1": "Адрес 1 (улица)",
+    "Address1Ios": "Адрес 1",
+    "Address2": "Адрес 2 (улица)",
+    "Address2Ios": "Адрес 2",
+    "AddressIos": "Адрес",
+    "City": "Город",
+    "State": "Область",
+    "Country": "Страна",
+    "Postcode": "Индекс",
+    "ReciverTitle": "Получатель",
+    "Name": "Имя",
+    "NameIos": "Имя",
+    "FullName": "Имя полностью",
+    "FullNameIos": "Имя и фамилия",
+    "Phone": "Номер телефона",
+    "PhoneIos": "Телефон",
+    "SaveShippingInfo": "Сохранить адрес доставки",
+    "SaveShippingInfoDescription": "Вы можете сохранить эти данные, чтобы в будущем использовать их для доставки.",
+    "MainButtonText": "Готово"
+  },
+  "product": {
+    "OptionsHeader": "Опции",
+    "ToastText": "Товар добавлен в <a class=\"link\" href=\"/cart/\">корзину</a>",
+    "ToastButtonText": "Отмена",
+    "color": "Цвет",
+    "size": "Размер",
+    "surface": "Фон"
+  },
+  "mainButton": {
+    "Done": "Готово",
+    "Cart": "Корзина",
+    "Checkout": "Перейти к оформлению",
+    "Pay": "Оформить заказ"
+  },
+  "app": {
+    "UnacceptablePlatform": "Доступ запрещен"
+  },
+  "productItem": {
+    "Add": "В корзину"
+  }
+}

@@ -1,0 +1,71 @@
+@import './tds/tds-colors.less';
+@import './button.less';
+@import './chip.less';
+@import './sheet.less';
+@import './tds/tds-typography.less';
+@import './toast.less';
+@import './page.less';
+@import './skeleton.less';
+@import './input.less';
+@import './list.less';
+@import './searchbar.less';
+
+/* Custom color theme properties */
+:root {
+  --f7-theme-color: #50a8eb;
+  --f7-theme-color-rgb: 80, 168, 235;
+  --f7-theme-color-shade: #2b96e7;
+  --f7-theme-color-tint: #75baef;
+}
+
+/* Your app custom styles here */
+
+:root {
+  --f7-text-color: var(--tds-theme-text-color);
+  // --f7-block-footer-text-color: var(--tg-theme-hint-color, rgba(0, 0, 0, 0.6));
+  // --skeleton-color: #F1F1F1;
+  // --f7-font-family: system-ui, Noto, Helvetica, Arial, sans-serif;
+
+  --tds-default-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 1px rgba(0, 0, 0, 0.05), 0px 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+body {
+  height: calc(100% + 1px); // hack to prevent closing by swipe
+}
+
+html {
+  overflow: hidden;
+}
+
+.primary-bg-color {
+  background-color: var(--tds-theme-bg-color) !important;
+}
+
+.secondary-bg-color {
+  background-color: var(--tds-theme-secondary-bg-color) !important;
+}
+
+// .md {
+//   --f7-page-bg-color: var(--tg-theme-secondary-bg-color, #F0F0F0);
+//   --f7-list-bg-color: var(--tg-theme-bg-color, #FFFFFF);
+// }
+
+.default-shadow {
+  box-shadow: var(--tds-default-shadow) !important;
+}
+
+.position-absolute {
+  position: absolute !important;
+}
+
+.position-relative {
+  position: relative !important;
+}
+
+.overflow-auto {
+  overflow: auto !important;
+}
+
+.flex-wrap {
+  flex-wrap: wrap !important;
+}

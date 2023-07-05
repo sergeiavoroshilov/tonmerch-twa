@@ -1,0 +1,84 @@
+<template>
+  <div class="page primary-bg-color" data-name="products">
+    <div class="page-content">
+      ${$store.getters.products.value.length > 0 ? $h`
+        <div class="block products-grid">
+          ${$store.getters.products.value.map((product) => $h`
+            <app-product-item product=${product}></app-product-item>
+          `)}
+        </div>
+      ` : $h`
+        <div class="block products-grid">
+          ${[1, 2, 3, 4].map(() => $h`
+            <app-product-item></app-product-item>
+          `)}
+        </div>
+      `}
+    </div>
+
+    <app-quike-options-sheet @open=${hideMainButton} @close=${showMainButton}></app-quike-options-sheet>
+  </div>
+</template>
+
+<style>
+.products-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  grid-auto-flow: row;
+  gap: var(--f7-grid-gap) var(--f7-grid-gap);
+}
+</style>
+
+<script>
+export default (props, { $store, $f7, $on, $f7router }) => {
+  $store.dispatch('getProducts');
+
+  $on('pageBeforeIn', () => {
+    showMainButton();
+    $f7.on('cartUpdated', onCartUpdate);
+  });
+
+  function showMainButton() {
+    if ($store.state.cart.length > 0) {
+      $f7.on('mainButton:click', onMainButtonClick);
+      $f7.MainButton.setParams({
+        text: $f7.$t('mainButton:Cart'),
+        color: '#55BE61',
+        text_color: Telegram.WebApp.button_text_color,
+        is_active: true,
+        is_visible: true,
+      });
+    } else {
+      hideMainButton();
+      $f7.MainButton.setParams({ is_visible: false });
+    }
+  }
+
+  function hideMainButton() {
+    // TODO: fix names of main button functions in all pages and components
+    $f7.off('mainButton:click', onMainButtonClick);
+  }
+
+  function onMainButtonClick() {
+    $f7router.navigate('/cart/');
+  }
+
+  function onCartUpdate(cart) {
+    if (cart.length > 0) {
+      !Telegram.WebApp.MainButton.isVisible && showMainButton();
+    } else {
+      Telegram.WebApp.MainButton.isVisible && hideMainButton();
+      $f7.MainButton.setParams({ is_visible: false });
+    }
+  }
+
+  $on('pageBeforeOut', () => {
+    hideMainButton();
+    $f7.off('cartUpdated', onCartUpdate);
+    $f7.timerToast.close();
+  });
+
+  return $render;
+}
+</script>

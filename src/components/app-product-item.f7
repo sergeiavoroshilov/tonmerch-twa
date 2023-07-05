@@ -1,0 +1,79 @@
+<template>
+  <div class="app-product-item card no-shadow no-margin primary-bg-color">
+    ${props.product ? $h`
+      <a href="${props.product.id}/" data-transition="f7-parallax">
+        <div class="app-product-item__image card-header" style="background-image:url(${props.product.image})">
+        </div>
+
+        <div class="app-product-item__title display-flex justify-content-space-between">
+          <span class="tds-subtitle-3">${props.product.title}</span>
+          <app-number class="tds-subtitle-2" type="currency" value=${props.product.price} currency=${props.product.currency}></app-number>
+        </div>
+      </a>
+      <button class="button button-fill" @click=${addToCart}>${$f7.$t('productItem:Add')}</button>
+    ` : $h`
+      <div class="app-product-item__image card-header skeleton-block skeleton-effect-wave"></div>
+      <div class="app-product-item__title display-flex justify-content-space-between skeleton-text skeleton-effect-wave">
+        <span>Product Title</span>
+        <span>1000</span>
+      </div>
+      <div class="app-product-item__skeleton-button skeleton-block skeleton-effect-wave"></div>
+    `}
+  </div>
+</template>
+
+<style>
+.app-product-item {
+  border-radius: var(--f7-card-border-radius);
+  box-shadow: var(--f7-card-box-shadow);
+  width: calc((100vw - 16px * 3) / 2);
+}
+.app-product-item__image {
+  --f7-card-border-radius: 8px;
+  height: calc((100vw - var(--f7-grid-gap) * 3) / 2);
+  background-size: cover;
+  background-position: center;
+  background-color: var(--tg-theme-secondary-bg-color, #F0F0F0);
+  color: #fff;
+  text-shadow: var(--f7-card-box-shadow);
+  font-weight: 500;
+  border-radius: var(--f7-card-border-radius);
+}
+.app-product-item__image::after {
+  content: none;
+}
+.app-product-item__title {
+  color: var(--f7-text-color);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.app-product-item__title .tds-subtitle-3 {
+  max-width: calc(100% - 50px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-product-item__skeleton-button {
+  height: var(--f7-button-height);
+  border-radius: var(--f7-button-border-radius);
+}
+</style>
+
+<script>
+export default (props, { $f7, $store, $emit }) => {
+  function addToCart() {
+    if (props.product.variants.length > 1) {
+      $f7.emit('openQuikeOptionsSheet', props.product);
+    } else {
+      $store.state.cart.push(props.product.variants[0]);
+      $f7.emit('cartUpdated', $store.state.cart);
+      $f7.timerToast.show(() => {
+        $store.state.cart.pop();
+        $f7.emit('cartUpdated', $store.state.cart);
+      });
+    }
+  }
+
+  return $render;
+}
+</script>

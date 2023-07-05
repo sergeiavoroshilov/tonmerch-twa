@@ -1,0 +1,23 @@
+.sheet-modal {
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.15);
+  --f7-sheet-bg-color: var(--tds-theme-bg-color);
+}
+
+.smart-select-sheet .toolbar {
+  --f7-toolbar-bg-color: transparent;
+  --f7-toolbar-height: 12px;
+
+  & .toolbar-inner {
+    display: none;
+  }
+
+  & + .sheet-modal-inner {
+    height: 100%;
+  }
+}
+
+.sheet-backdrop {
+  background-color: rgba(0, 0, 0, 0.2);
+}

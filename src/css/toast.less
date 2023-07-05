@@ -1,0 +1,22 @@
+.toast {
+  --f7-toast-bg-color: rgba(39, 47, 56, 0.92);
+  --f7-toast-border-radius: 6px;
+  --f7-toast-padding-horizontal: 15px;
+  --f7-toast-padding-vertical: 15px;
+  --f7-toast-font-size: 15px;
+  --f7-toast-font-weight: 500;
+
+  font-weight: var(--f7-toast-font-weight);
+}
+
+.md .toast {
+  transform: translateY(60px);
+}
+
+.md .toast.modal-in {
+  transform: translateY(0px);
+}
+
+.md .toast.toast-bottom {
+  bottom: calc(8px + var(--f7-safe-area-bottom) + 100vh - var(--tg-viewport-height));
+}

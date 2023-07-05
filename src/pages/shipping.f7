@@ -1,0 +1,169 @@
+<template>
+  <div class="page" data-name="shipping">
+    <form class="page-content">
+      <tds-list class="inline-labels no-chevron">
+        <span slot="header">${$f7.$t('shipping:AddressTitle')}</span>
+        <li slot="items" class="item-content ${$f7.device.ios && 'item-input'}">
+          <div class="item-inner">
+            <div class="item-title item-label if-ios">${$f7.$t('shipping:Address1Ios')}</div>
+            <div class="item-input-wrap">
+              <input type="text" name="street_line1" placeholder="${$f7.$t($f7.theme === 'md' ? 'shipping:Address1' : 'shipping:AddressIos')}" required validate />
+            </div>
+          </div>
+        </li>
+        <li slot="items" class="item-content ${$f7.device.ios && 'item-input'}">
+          <div class="item-inner">
+            <div class="item-title item-label if-ios">${$f7.$t('shipping:Address2Ios')}</div>
+            <div class="item-input-wrap">
+              <input type="text" name="street_line2" placeholder="${$f7.$t($f7.theme === 'md' ? 'shipping:Address2' : 'shipping:AddressIos')}" />
+            </div>
+          </div>
+        </li>
+        <li slot="items" class="item-content ${$f7.device.ios && 'item-input'}">
+          <div class="item-inner">
+            <div class="item-title item-label if-ios">${$f7.$t('shipping:City')}</div>
+            <div class="item-input-wrap">
+              <input type="text" name="city" placeholder="${$f7.$t('shipping:City')}" required validate />
+            </div>
+          </div>
+        </li>
+        <li slot="items" class="item-content ${$f7.device.ios && 'item-input'}">
+          <div class="item-inner">
+            <div class="item-title item-label if-ios">${$f7.$t('shipping:State')}</div>
+            <div class="item-input-wrap">
+              <input type="text" name="state" placeholder="${$f7.$t('shipping:State')}" required validate />
+            </div>
+          </div>
+        </li>
+        <tds-country-smart-select slot="items"></tds-country-smart-select>
+        <li slot="items" class="item-content ${$f7.device.ios && 'item-input'}">
+          <div class="item-inner">
+            <div class="item-title item-label if-ios">${$f7.$t('shipping:Postcode')}</div>
+            <div class="item-input-wrap">
+              <input type="text" name="post_code" placeholder="${$f7.$t('shipping:Postcode')}" required validate />
+            </div>
+          </div>
+        </li>
+      </tds-list>
+
+      <tds-list class="inline-labels">
+        <span slot="header">${$f7.$t('shipping:ReciverTitle')}</span>
+        <li slot="items" class="item-content ${$f7.device.ios && 'item-input'}">
+          <div class="item-inner">
+            <div class="item-title item-label if-ios">${$f7.$t('shipping:NameIos')}</div>
+            <div class="item-input-wrap">
+              <input type="text" name="full_name" placeholder="${$f7.$t($f7.theme === 'md' ? 'shipping:FullName' : 'shipping:FullNameIos')}" required validate />
+            </div>
+          </div>
+        </li>
+        <li slot="items" class="item-content ${$f7.device.ios && 'item-input'}">
+          <div class="item-inner">
+            <div class="item-title item-label if-ios">${$f7.$t('shipping:PhoneIos')}</div>
+            <div class="item-input-wrap">
+              <input type="tel" name="phone_number" placeholder="${$f7.$t($f7.theme === 'md' ? 'shipping:Phone' : 'shipping:PhoneIos')}" required validate />
+            </div>
+          </div>
+        </li>
+      </tds-list>
+
+      <tds-list class="simple-list">
+        <li slot="items">
+          <span>${$f7.$t('shipping:SaveShippingInfo')}</span>
+          <tds-toggle id="save-data"></tds-toggle>
+        </li>
+      </tds-list>
+
+      <tds-footer>
+        ${$f7.$t('shipping:SaveShippingInfoDescription')}
+      </tds-footer>
+
+      ${process.env.NODE_ENV === 'development' && $h`
+        <div class="block">
+          <button class="button button-fill" type="button" @click=${onMainButtonClick}>${$f7.$t('mainButton:Done')}</button>
+        </div>
+      `}
+    </form>
+  </div>
+</template>
+
+<style>
+.shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+</style>
+
+<script>
+export default (props, { $ref, $f7, $on, $f7router, $el, $, $store }) => {
+  $on('pageBeforeIn', () => {
+    $f7.form.fillFromData($el.value.find('form')[0], $store.state.shippingAddress);
+
+    $f7.on('mainButton:click', onMainButtonClick);
+    $f7.MainButton.setParams({
+      text: $f7.$t('mainButton:Done'),
+      color: Telegram.WebApp.themeParams.button_color,
+      text_color: Telegram.WebApp.themeParams.button_text_color,
+      is_active: true,
+      is_visible: true,
+    });
+  });
+
+  function onMainButtonClick() {
+    saveShippingAddress();
+    $f7router.back();
+  }
+
+  function saveShippingAddress() {
+    validateForm();
+
+    $store.state.shippingAddress = $f7.form.convertToData($el.value.find('form')[0]);
+    $store.state.shippingAddress.country_code = $el.value.find('select').val();
+    const saveToLocalStorage = $el.value.find('.toggle input')[0].checked;
+
+    if (saveToLocalStorage) {
+      localStorage.setItem('shipping_address', JSON.stringify($store.state.shippingAddress));
+    } else {
+      localStorage.removeItem('shipping_address');
+    }
+  }
+
+  function validateForm() {
+    $el.value.find('input[required][validate]').each((input) => {
+      if (!$f7.input.validate(input)) {
+        if (Telegram.WebApp.isVersionAtLeast('6.1')) {
+          $(input).addClass('shake');
+          $f7.utils.nextTick(() => $(input).removeClass('shake'), 400);
+          Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        }
+        throw new Error('Fill all required validate fields')
+      }
+    })
+  }
+
+  $on('pageBeforeOut', () => {
+    $f7.off('mainButton:click', onMainButtonClick);
+  });
+
+  return $render;
+}
+</script>

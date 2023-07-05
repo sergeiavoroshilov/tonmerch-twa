@@ -1,0 +1,22 @@
+<template>
+  <li>
+    <a class="item-link smart-select smart-select-init" data-open-in="sheet" data-close-on-select="true" data-sheet-backdrop="true">
+      <select name=${props.option.name}>
+        ${props.option.values.map((value, index) => $h`
+          <option value=${value} selected=${index === 0}>${value}</option>
+        `)}
+      </select>
+      <div class="item-content">
+        <div class="item-inner">
+          <div class="item-title">${props.option.name}</div>
+        </div>
+      </div>
+    </a>
+  </li>
+</template>
+
+<script>
+export default (props) => {
+  return $render;
+}
+</script>

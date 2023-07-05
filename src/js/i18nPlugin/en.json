@@ -1,0 +1,61 @@
+{
+  "checkout": {
+    "Total": "Total",
+    "PaymentMethod": "Payment method",
+    "PaymentMethodIos": "Payment Method",
+    "ShippingAddress": "Shipping address",
+    "ShippingAddressIos": "Shipping Information",
+    "Delivery": "Delivery",
+    "ConfirmDialogTitle": "Create Order",
+    "ConfirmDialogText": "Confirm creating of Order #{{orderId}} and proceed to payment",
+    "ConfirmDialogButton": "Continue",
+    "PromoCode": "Promo code",
+    "Apply": "Apply",
+    "Discount": "Discount",
+    "ErrorPromoCodeExpired": "Promo code has expired",
+    "ErrorPromoCodeUsed": "Promo code already used",
+    "ErrorPromoCodeInvalid": "Invalid promo code"
+  },
+  "shipping": {
+    "AddressTitle": "Shipping address",
+    "Address1": "Address 1 (Street)",
+    "Address1Ios": "Address 1",
+    "Address2": "Address 2 (Street)",
+    "Address2Ios": "Address 2",
+    "AddressIos": "Address",
+    "City": "City",
+    "State": "State",
+    "Country": "Country",
+    "Postcode": "Postcode",
+    "ReciverTitle": "Reciver",
+    "Name": "Name",
+    "NameIos": "Name",
+    "FullName": "Full Name",
+    "FullNameIos": "First and Last Name",
+    "Phone": "Phone",
+    "PhoneIos": "Phone",
+    "SaveShippingInfo": "Save Shipping Information",
+    "SaveShippingInfoDescription": "You can save your shipping info for future use.",
+    "MainButtonText": "Done"
+  },
+  "product": {
+    "OptionsHeader": "Options",
+    "ToastText": "Product added to the <a class=\"link\" href=\"/cart/\">Cart</a>",
+    "ToastButtonText": "Undo",
+    "color": "Color",
+    "size": "Size",
+    "surface": "Surface"
+  },
+  "mainButton": {
+    "Done": "Done",
+    "Cart": "View Cart",
+    "Checkout": "Checkout",
+    "Pay": "Create Order"
+  },
+  "app": {
+    "UnacceptablePlatform": "Access denied"
+  },
+  "productItem": {
+    "Add": "Add to Cart"
+  }
+}

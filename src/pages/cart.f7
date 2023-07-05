@@ -1,0 +1,95 @@
+<template>
+  <div class="page" data-name="cart">
+    <div class="page-content">
+      <tds-list class="cart media-list no-hairlines-between">
+        ${$store.getters.cart.value.map((item) => $h`
+          <li slot="items" class="order-item">
+            <div class="item-content ${$theme.ios && 'margin-right'}">
+              <div class="item-media">
+                <img src=${mainImageUrl(item)} width="38" height="38"/>
+              </div>
+              <div class="item-inner">
+                <div class="item-title tds-headline">${item.product.title} <span class="text-color-primary">x${item.quantity}</span></div>
+                <div class="item-subtitle tds-caption text-color-gray">
+                  ${item.variant.title}
+                </div>
+              </div>
+              <div class="stepper stepper-fill stepper-small stepper-raised">
+                <div class="stepper-button-minus" @click=${() => changeQuantity(item, -1)}></div>
+                <div class="stepper-button-plus" @click=${() => changeQuantity(item, +1)}></div>
+              </div>
+            </div>
+          </li>
+        `)}
+      </tds-list>
+
+      ${process.env.NODE_ENV === 'development' && $h`
+        <div class="block">
+          <button class="button button-fill color-green" type="button" @click=${onMainButtonClick}>${$f7.$t('mainButton:Checkout')}</button>
+        </div>
+      `}
+    </div>
+  </div>
+</template>
+
+<style>
+.md .cart {
+  --f7-list-item-padding-horizontal: 15px !important;
+}
+
+.md .cart .item-media img {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.md .cart .stepper {
+  margin-right: var(--f7-list-item-padding-horizontal) !important;
+}
+</style>
+
+<script>
+export default (props, { $f7, $on, $store, $f7router, $update, $theme }) => {
+  $on('pageBeforeIn', () => {
+    $f7.on('mainButton:click', onMainButtonClick);
+    $f7.MainButton.setParams({
+      text: $f7.$t('mainButton:Checkout'),
+      color: '#55BE61',
+      text_color: Telegram.WebApp.button_text_color,
+      is_active: true,
+      is_visible: true,
+    });
+  });
+
+  function onMainButtonClick() {
+    $f7router.navigate('/checkout/');
+  }
+
+  function mainImageUrl(item) {
+    return item.variant.images[0];
+  }
+
+  function changeQuantity(item, step) {
+    if (step > 0) {
+      $store.state.cart.push(item.variant);
+    } else {
+      const itemIndex = $store.state.cart.findLastIndex((i) => i.sku === item.variant.sku);
+      $store.state.cart.splice(itemIndex, 1);
+    }
+
+    if ($store.state.cart.length > 0) {
+      $update();
+    } else {
+      $f7router.navigate('/products/');
+    }
+
+    $f7.emit('cartUpdated', $store.state.cart);
+    Telegram.WebApp.HapticFeedback.impactOccurred('light');
+  }
+
+  $on('pageBeforeOut', () => {
+    $f7.off('mainButton:click', onMainButtonClick);
+  });
+
+  return $render;
+}
+</script>

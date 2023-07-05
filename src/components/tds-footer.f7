@@ -1,0 +1,16 @@
+<template>
+  <div class="tds-footer block-footer">
+    <slot></slot>
+  </div>
+</template>
+
+<style>
+.md .tds-footer {
+  --f7-block-footer-text-color: var(--tg-theme-hint-color, #696A6F);
+  --f7-block-footer-margin: 12px;
+  --f7-block-padding-horizontal: 20px;
+  --f7-block-footer-font-size: 13px;
+
+  line-height: 14px;
+}
+</style>

@@ -1,0 +1,73 @@
+<template>
+  <label class="tds-radio-image">
+    <div class="tds-radio-image__bg" style="background-image: url(${props.src})">
+      <input type="radio" name=${props.name} value=${props.value} checked=${props.checked} style="color: ${props.accentColor}" />
+    </div>
+    <div class="tds-radio-image__caption">${props.caption}</div>
+  </label>
+</template>
+
+<style>
+.tds-radio-image {
+  display: inline-block;
+  width: 76px;
+  height: 123px;
+  cursor: pointer;
+}
+.tds-radio-image__bg {
+  height: 97px;
+  border-radius: 6px;
+  background-position: top;
+  background-size: contain;
+  background-color: lightgray;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08) inset;
+  position: relative;
+}
+.tds-radio-image__caption {
+  font-size: 13px;
+  line-height: 15px;
+  text-align: center;
+  font-weight: 400;
+  margin-top: 11px;
+}
+.tds-radio-image + .tds-radio-image {
+  margin-left: 15px;
+}
+.tds-radio-image input[type="radio"] {
+  appearance: none;
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  box-sizing: border-box;
+  border: 2px solid #95999C;
+  position: absolute;
+  left: 28px;
+  bottom: 12px;
+  cursor: pointer;
+}
+.tds-radio-image input[type="radio"]:checked {
+  border: 2px solid currentColor;
+}
+.tds-radio-image input[type="radio"]::before {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  background-color: currentColor;
+}
+.tds-radio-image input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+</style>
+
+<script>
+export default (props) => {
+  return $render;
+}
+</script>

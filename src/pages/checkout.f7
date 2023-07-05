@@ -1,0 +1,460 @@
+<template>
+  <div class="page" data-name="checkout">
+    <div class="page-content">
+      <tds-list class="order media-list no-hairlines-between-md">
+        <li slot="items">
+          <div class="item-content" style="padding-left: var(--f7-list-item-padding-vertical)">
+            <div class="item-media">
+              <img class="lazy order-img" data-src=${mainImageUrl()} />
+            </div>
+            <div class="item-inner justify-content-flex-start no-hairlines" style="margin-left: var(--f7-list-item-padding-vertical)">
+              <div class="item-title"><b>Order #${orderId}</b></div>
+              <div class="item-subtitle">Amazing merch of TON project</div>
+              <div class="item-text no-margin-top tds-hint-color">TON Merch</div>
+            </div>
+          </div>
+        </li>
+
+        <li slot="items" class="item-divider if-md">
+          <div></div> <!-- Shadow  -->
+          <div></div> <!-- Shadow  -->
+        </li>
+
+        ${cart.value.map((item) => $h`
+          <li slot="items" class="order-item">
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title-row">
+                  <div class="item-title tds-hint-color">${item.product.title} (${item.variant.title}) x${item.quantity}</div>
+                  <div class="item-after tds-hint-color">
+                    <app-number type="currency" value=${item.variant.price * item.quantity} currency="TON"></app-number>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `)}
+
+        ${promotionCodesAllowed && $h`
+          <li slot="items" class="order-item ${promotionCodeLoading.value && 'disabled'}">
+            ${promotionCode ? $h`
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title-row">
+                    <div class="item-title tds-hint-color">${$f7.$t('checkout:Discount')}</div>
+                    <div class="item-after tds-hint-color">
+                      <app-number type="currency" value=${discountValue()} currency="USD"></app-number>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              ` : $h`
+              <form class="item-content item-input" @submit=${calculateDiscount}>
+                <div class="item-inner" style="padding-top: 3px; padding-bottom: 3px;">
+                  <div class="item-title-row">
+                    <div class="item-input-wrap">
+                      <input type="text" name="code" maxlength="6" placeholder="${$f7.$t('checkout:PromoCode')}" required validate pattern="([A-z]|[0-9]){6}" autocomplete="off" />
+                    </div>
+                    <div class="item-after">
+                      ${promotionCodeLoading.value ? $h`
+                        <span class="preloader color-primary" style="width: 24px; height: 24px"></span>
+                      ` : $h`
+                        <button type="submit" class="button buttom-small">${$f7.$t('checkout:Apply')}</button>
+                      `}
+                    </div>
+                  </div>
+                </div>
+              </form>
+            `}
+          </li>
+        `}
+
+        ${premiumDiscount() < 0 && $h`
+          <li slot="items" class="order-item">
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title-row">
+                  <div class="item-title tds-hint-color premium">Premium (-5%)</div>
+                  <div class="item-after tds-hint-color">
+                    <app-number type="currency" value=${premiumDiscount()} currency="USD"></app-number>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `}
+
+        ${shippingAddress.value && $h`
+          <li slot="items" class="order-item">
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title-row">
+                  <div class="item-title tds-hint-color">${$f7.$t('checkout:Delivery')}</div>
+                  <div class="item-after tds-hint-color">
+                    ${shipping.value ? $h`
+                      <app-number type="currency" value=${shipping.value.cost} currency=${shipping.value.currency}></app-number>
+                    ` : $h`
+                      <span class="skeleton-text skeleton-effect-wave">10000</span>
+                    `}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `}
+
+        <li slot="items" class="order-total">
+          <div class="item-content">
+            <div class="item-inner">
+              <div class="item-title-row">
+                <div class="item-title"><b>${$f7.$t('checkout:Total')}</b></div>
+                <div class="item-after display-block text-align-right">
+                  <b class="display-block">
+                    <app-number type="currency" value=${total()} currency="TON"></app-number>
+                  </b>
+                  <div class="margin-top-half tds-hint-color">
+                    ≈ <app-number type="currency" value=${totalInUsd()} currency="USD"></app-number>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </tds-list>
+
+      ${shippingAddress.value && $h`
+        <tds-list class="${$f7.theme === 'md' && 'media-list'}">
+          <li slot="items">
+            <a href="#" class="item-link item-content ${$f7.theme === 'md' && 'no-chevron'}">
+              ${$theme.md && $h`
+                <div class="item-media">
+                  <img src="/assets/icons/payment.svg" />
+                </div>
+              `}
+              <div class="item-inner">
+                <div class="item-title if-ios">${$f7.$t('checkout:PaymentMethodIos')}</div>
+                <div class="item-after if-ios">TON Wallet</div>
+                <div class="item-title if-md">TON Wallet</div>
+                <div class="item-text tds-hint-color if-md">${$f7.$t('checkout:PaymentMethod')}</div>
+              </div>
+            </a>
+          </li>
+
+          <li slot="items">
+            <a href="/shipping/" class="item-link item-content ${$f7.theme === 'md' && 'no-chevron'}">
+              ${$theme.md && $h`
+                <div class="item-media">
+                  <img src="/assets/icons/map_point.svg" />
+                </div>
+              `}
+              <div class="item-inner">
+                <div class="item-title flex-shrink-0 if-ios">${$f7.$t('checkout:ShippingAddressIos')}</div>
+                <div class="item-after flex-shrink-1 if-ios" style="white-space: var(--f7-list-item-title-white-space); overflow: hidden; text-overflow: ellipsis;">${fullAddress()}</div>
+                <div class="item-title if-md">${fullAddress()}</div>
+                <div class="item-text tds-hint-color if-md">${$f7.$t('checkout:ShippingAddress')}</div>
+              </div>
+            </a>
+          </li>
+
+          <li slot="items">
+            <a href="/shipping/" class="item-link item-content ${$f7.theme === 'md' && 'no-chevron'}">
+              ${$theme.md && $h`
+                <div class="item-media">
+                  <img src="/assets/icons/user.svg" />
+                </div>
+              `}
+              <div class="item-inner">
+                <div class="item-title if-ios">${$f7.$t('shipping:NameIos')}</div>
+                <div class="item-after if-ios">${shippingAddress.value.full_name}</div>
+                <div class="item-title if-md">${shippingAddress.value.full_name}</div>
+                <div class="item-text tds-hint-color if-md">${$f7.$t('shipping:Name')}</div>
+              </div>
+            </a>
+          </li>
+
+          <li slot="items">
+            <a href="/shipping/" class="item-link item-content ${$f7.theme === 'md' && 'no-chevron'}">
+              ${$theme.md && $h`
+                <div class="item-media">
+                  <img src="/assets/icons/phone.svg" />
+                </div>
+              `}
+              <div class="item-inner">
+                <div class="item-title if-ios">${$f7.$t('shipping:PhoneIos')}</div>
+                <div class="item-after if-ios">${shippingAddress.value.phone_number}</div>
+                <div class="item-title if-md">${shippingAddress.value.phone_number}</div>
+                <div class="item-text tds-hint-color if-md">${$f7.$t('shipping:Phone')}</div>
+              </div>
+            </a>
+          </li>
+        </tds-list>
+      `}
+
+      ${process.env.NODE_ENV === 'development' && $h`
+        <div class="block">
+          <button class="button button-fill color-green" type="button" @click=${onMainButtonClick}>${$f7.$t('mainButton:Pay', { total: totalInUsd() })}</button>
+        </div>
+      `}
+    </div>
+  </div>
+</template>
+
+<style>
+.md .order .order-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+}
+.ios .order .order-img {
+  width: 128px;
+  height: 128px;
+  border-radius: 4px;
+}
+[data-name="checkout"] .order .premium {
+  position: relative;
+  overflow: visible;
+  padding-left: 23px;
+}
+[data-name="checkout"] .order .premium:before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  background-image: url(/assets/icons/premium_star.png);
+  background-size: cover;
+  background-position: center;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+[data-name="checkout"] .order-item {
+  --f7-list-media-item-title-font-weight: var(--f7-list-item-after-font-weight);
+  --f7-list-item-title-text-color: var(--f7-list-item-after-text-color);
+}
+[data-name="checkout"] .order-item .item-inner:after, .no-hairlines.item-inner:after {
+  content: none;
+}
+[data-name="checkout"] .order-item:nth-last-child(-n+2) .item-inner:after {
+  content: '';
+}
+[data-name="checkout"] .order-total {
+  --f7-list-item-after-text-color: var(--f7-list-item-title-text-color);
+  --f7-list-item-after-font-weight: var(--f7-list-media-item-title-font-weight);
+}
+[data-name="checkout"] .order-item:nth-child(-n+2) .item-inner:before {
+  content: '';
+  position: absolute;
+  background-color: var(--f7-list-item-border-color);
+  display: block;
+  z-index: 15;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  transform-origin: 50% 100%;
+  transform: scaleY(calc(1 / var(--f7-device-pixel-ratio)));
+}
+</style>
+
+<script>
+export default (props, { $f7, $on, $ref, $store, $f7router, $request, $theme, $, $el }) => {
+  const shippingAddress = $store.getters.shippingAddress;
+  const cart = $store.getters.cart;
+  const shipping = $ref(null);
+  const orderId = Math.trunc((Date.now() - new Date('2022-01-01')) / 100);
+  const promotionCodesAllowed = false;
+  const promotionCodeLoading = $ref(false);
+  let promotionCode;
+
+  $on('pageBeforeIn', () => {
+    $f7.on('mainButton:click', onMainButtonClick);
+    $f7.MainButton.setParams({
+      text: $f7.$t('mainButton:Pay', { total: total() }),
+      color: '#55BE61',
+      text_color: Telegram.WebApp.button_text_color,
+      is_active: !shippingAddress.value,
+      is_visible: true,
+    });
+
+    if ($theme.ios) {
+      $('.navbars').remove();
+    }
+  });
+
+  $on('pageAfterIn', () => {
+    if (shippingAddress.value) {
+      calculateShipping();
+    }
+  });
+
+  async function calculateShipping() {
+    const orderData = getOrderData();
+    const { data } = await $f7.request.postJSON('/orders/shipping', orderData);
+    shipping.value = data[0];
+
+    $f7.MainButton.setParams({
+      text: $f7.$t('mainButton:Pay', { total: total() }),
+      is_active: true,
+    });
+  }
+
+  function getOrderData() {
+    const orderData = {
+      external_id: String(orderId),
+      items: $store.getters.cart.value.map((item) => ({
+        product_id: item.product.id,
+        variant_id: item.variant.id,
+        quantity: item.quantity,
+      })),
+      shipping_id: shipping.value?.id,
+      shipping_address: $store.state.shippingAddress,
+    };
+
+    const code = $f7.form.convertToData($el.value.find('form')[0])?.code || promotionCode?.promotion_code;
+    if (code) {
+      orderData.promotion_code = code;
+    }
+
+    return orderData;
+  }
+
+  async function onMainButtonClick() {
+    if (!shippingAddress.value) {
+      return $f7router.navigate('/shipping/');
+    }
+
+    try {
+      await orderConfirmation();
+
+      Telegram.WebApp.MainButton.showProgress();
+
+      const payload = getOrderData();
+      const { data } = await $f7.request.postJSON('/orders', payload);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      Telegram.WebApp.MainButton.hideProgress();
+    }
+  }
+
+  function orderConfirmation() {
+    if (process.env.NODE_ENV === 'development') {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const buttons = [
+        {
+          id: 'continue',
+          type: 'default',
+          text: $f7.$t('checkout:ConfirmDialogButton'),
+        },
+        {
+          type: 'cancel',
+        }
+      ];
+      
+      if ($theme.ios) {
+        buttons.reverse();
+      }
+
+      Telegram.WebApp.showPopup({
+        title: $f7.$t('checkout:ConfirmDialogTitle'),
+        message: $f7.$t('checkout:ConfirmDialogText', { orderId, total: total() }),
+        buttons,
+      }, (buttonId) => {
+        if (buttonId === 'continue') {
+          resolve();
+        } else {
+          reject();
+        }
+      })
+    });
+  }
+
+  function fullAddress() {
+    return shippingAddress.value
+      ? `${shippingAddress.value.street_line1} ${shippingAddress.value.street_line2 ?? ''}, ${shippingAddress.value.city}, ${shippingAddress.value.state}, ${shippingAddress.value.country_code}, ${shippingAddress.value.post_code}`
+      : '';
+  }
+
+  function cartSum() {
+    return cart.value.reduce((sum, current) => {
+      return sum += current.variant.price * current.quantity;
+    }, 0);
+  }
+
+  function premiumDiscount() {
+    const discount = Telegram.WebApp.initDataUnsafe?.user?.is_premium ? -0.05 : 0;
+    return 0; // cartSum() * discount;
+  }
+
+  async function calculateDiscount(e) {
+    e.preventDefault();
+
+    const { code } = $f7.form.convertToData(e.target);
+    const orderData = getOrderData();
+
+    try {
+      promotionCodeLoading.value = true;
+
+      const { data } = await $f7.request.postJSON(`/orders/discount`, orderData);
+      promotionCode = data;
+    } catch (e) {
+      switch (e.message) {
+        case 'Not Found':
+          Telegram.WebApp.showAlert($f7.$t('checkout:ErrorPromoCodeInvalid'));
+          break;
+        case 'Promo code has expired':
+          Telegram.WebApp.showAlert($f7.$t('checkout:ErrorPromoCodeExpired'));
+          break;
+        case 'Promo code already used':
+          Telegram.WebApp.showAlert($f7.$t('checkout:ErrorPromoCodeUsed'));
+          break;
+        case 'Invalid promo code':
+          Telegram.WebApp.showAlert($f7.$t('checkout:ErrorPromoCodeInvalid'));
+          break;
+        default:
+          Telegram.WebApp.showAlert($f7.$t('checkout:ErrorPromoCodeInvalid'));
+          console.error(e.message);
+      }
+    } finally {
+      promotionCodeLoading.value = false;
+    }
+  }
+
+  function discountValue() {
+    if (!promotionCode) {
+      return 0;
+    }
+
+    if (promotionCode.type === 'amount') {
+      return promotionCode.value * -1;
+    }
+    if (promotionCode.type === 'percent') {
+      return cartSum() * promotionCode.value * -1;
+    }
+  }
+
+  function total() {
+    return cartSum() + discountValue() + (shipping.value?.cost ?? 0);
+  }
+
+  function totalInUsd() {
+    return total() * $store.getters.tonusd.value;
+  }
+
+  function mainImageUrl() {
+    const mostPriceyItem = cart.value.sort((a, b) => b.variant.price * b.quantity - a.variant.price * a.quantity)[0];
+    return mostPriceyItem?.variant.images[0];
+  }
+
+  $on('pageBeforeOut', () => {
+    $f7.off('mainButton:click', onMainButtonClick);
+  });
+
+  return $render;
+}
+</script>

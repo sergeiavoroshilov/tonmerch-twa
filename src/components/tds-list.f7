@@ -1,0 +1,120 @@
+<template>
+  <div class="tds-list ${$f7.theme === 'md' && !props.noShadow && 'default-shadow'}">
+    <div class="block-header if-ios">
+      <slot name="header"></slot>
+    </div>
+    <div class="list no-hairlines-md ${$f7.theme === 'ios' && 'inset'} ${props.class}">
+      <ul>
+        <div class="block-title if-md">
+          <slot name="header"></slot>
+        </div>
+        <slot name="items"></slot>
+      </ul>
+    </div>
+    <div class="block-footer">
+      <slot name="footer"></slot>
+    </div>
+  </div>
+</template>
+
+<style>
+.md .tds-list {
+  --f7-block-title-padding-horizontal: 20px;
+  --f7-block-title-padding-vertical: 18px;
+  --f7-block-margin-vertical: 0px;
+  --f7-block-title-margin-bottom: 4px;
+  --f7-block-title-bg-color: var(--f7-list-bg-color);
+  --f7-block-title-text-color: var(--tds-theme-button-color);
+  --f7-block-title-font-size: 15px;
+  --f7-block-title-line-height: 18px;
+  --f7-block-title-font-weight: 500;
+
+  --f7-input-height: 34px;
+  --f7-list-item-padding-horizontal: 20px;
+  --f7-list-bg-color: var(--tds-theme-bg-color);
+  --f7-list-item-title-font-size: 15px;
+  --f7-list-item-title-line-height: 18px;
+  --f7-list-item-min-height: 40px;
+  --f7-list-item-after-font-size: 15px;
+  --f7-list-item-after-line-height: 18px;
+
+  --f7-list-item-divider-height: 12px;
+  --f7-list-item-divider-bg-color: var(--tds-theme-secondary-bg-color);
+}
+
+.md .tds-list .media-list {
+  --f7-list-item-padding-vertical: 11px;
+  --f7-list-item-padding-horizontal: 20px;
+  --f7-list-item-media-margin: 20px;
+}
+
+.md .tds-list .media-list .item-media {
+  min-height: 64px;
+  min-width: 25px;
+}
+
+.md .tds-list .media-list .item-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.md .tds-list .media-list .item-text {
+  margin-top: 6px;
+}
+
+.md .tds-list .list {
+  margin: 0;
+  margin-bottom: 12px;
+}
+
+.md .tds-list .block-title {
+  margin: 0;
+  padding-top: var(--f7-block-title-padding-vertical);
+  padding-left: var(--f7-block-title-padding-horizontal);
+  padding-right: var(--f7-block-title-padding-horizontal);
+  padding-bottom: var(--f7-block-title-margin-bottom);
+  background-color: var(--f7-block-title-bg-color);
+}
+
+.tds-list .block-title:empty {
+  display: none;
+}
+
+.ios .tds-list .block-header {
+  text-transform: uppercase;
+}
+
+.md .tds-list .item-divider div:first-child {
+  width: 200%;
+  height: 100%;
+  position: absolute;
+  left: -50%;
+  top: -100%;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 1px rgba(0, 0, 0, 0.05), 0px 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.md .tds-list .item-divider div:last-child {
+  width: 200%;
+  height: 100%;
+  position: absolute;
+  left: -50%;
+  top: 100%;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 1px rgba(0, 0, 0, 0.05), 0px 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.md .page-content .tds-list:first-child > .list > ul:before {
+  content: none;
+}
+
+.md .tds-list .smart-select {
+  --f7-list-item-title-line-height: 34px;
+}
+</style>
+
+<script>
+export default (props, { $f7 }) => {
+  return $render;
+}
+</script>

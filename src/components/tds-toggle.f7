@@ -1,0 +1,32 @@
+<template>
+  <label class="tds-toggle toggle toggle-init">
+    <input type="checkbox" checked />
+    <span class="toggle-icon"></span>
+  </label>
+</template>
+
+<style>
+.md .tds-toggle {
+  --f7-toggle-width: 30px;
+  --f7-toggle-height: 13px;
+  --f7-toggle-inactive-color: #b0afaf;
+}
+.md .tds-toggle .toggle-icon:after {
+  border: 2px solid var(--f7-toggle-inactive-color);
+  box-sizing: border-box;
+  box-shadow: none;
+}
+.md .tds-toggle.toggle input[type='checkbox']:checked + .toggle-icon {
+  background: var(--f7-toggle-active-color, var(--tds-theme-button-color));
+}
+.md .tds-toggle.toggle input[type='checkbox']:checked + .toggle-icon:after {
+  background: var(--tds-theme-bg-color);
+  border: 2px solid var(--f7-toggle-active-color, var(--tds-theme-button-color));
+}
+</style>
+
+<script>
+export default (props, { $f7 }) => {
+  return $render;
+}
+</script>

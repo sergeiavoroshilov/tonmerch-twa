@@ -1,0 +1,73 @@
+<template>
+  <span class="app-number ${props.class}">
+    ${type === 'currency' && currency === 'TON' && currencySymbolPosition === 'before' && $h`
+      <svg width="0.7em" height="0.7em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M3.82978 0.000106005L20.2979 0C20.8805 0 21.4627 0.0855686 22.0711 0.369223C22.8004 0.709189 23.1872 1.24504 23.4581 1.64132C23.4792 1.67215 23.4989 1.70392 23.5172 1.73643C23.8357 2.30353 24 2.91582 24 3.57447C24 4.20029 23.8511 4.88211 23.5172 5.47637C23.514 5.48213 23.5108 5.48769 23.5075 5.49335L13.1032 23.3657C12.8738 23.7599 12.4515 24.0016 11.9955 24C11.5394 23.9984 11.1188 23.7536 10.8922 23.3578L0.678959 5.52366C0.676023 5.51883 0.673087 5.51401 0.67015 5.50908C0.436411 5.12392 0.074949 4.5283 0.0117166 3.75965C-0.0463774 3.05277 0.112489 2.34453 0.46766 1.73045C0.822831 1.11627 1.35753 0.625298 2.00065 0.324761C2.69023 0.00251672 3.38904 0.000106005 3.82978 0.000106005ZM10.7234 2.55321H3.82978C3.37687 2.55321 3.20301 2.5811 3.08147 2.63793C2.91338 2.71637 2.77223 2.84546 2.67786 3.00862C2.58348 3.1719 2.5408 3.36107 2.55632 3.55045C2.56523 3.65899 2.60949 3.78314 2.87049 4.2136C2.87594 4.22262 2.88129 4.23175 2.88653 4.24087L10.7234 17.9254V2.55321ZM13.2766 2.55321V17.993L21.2949 4.21916C21.3854 4.05474 21.4468 3.81712 21.4468 3.57447C21.4468 3.37764 21.406 3.20671 21.3147 3.03054C21.219 2.89286 21.1607 2.81998 21.1119 2.77006C21.0701 2.72738 21.0379 2.70452 20.9924 2.68334C20.8028 2.59494 20.6088 2.55321 20.2979 2.55321H13.2766Z"/>
+      </svg>
+    `}
+
+    <span>${formattedValue()}</span>
+
+    ${type === 'currency' && currency === 'TON' && currencySymbolPosition === 'after' && $h`
+      <svg width="0.7em" height="0.7em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M3.82978 0.000106005L20.2979 0C20.8805 0 21.4627 0.0855686 22.0711 0.369223C22.8004 0.709189 23.1872 1.24504 23.4581 1.64132C23.4792 1.67215 23.4989 1.70392 23.5172 1.73643C23.8357 2.30353 24 2.91582 24 3.57447C24 4.20029 23.8511 4.88211 23.5172 5.47637C23.514 5.48213 23.5108 5.48769 23.5075 5.49335L13.1032 23.3657C12.8738 23.7599 12.4515 24.0016 11.9955 24C11.5394 23.9984 11.1188 23.7536 10.8922 23.3578L0.678959 5.52366C0.676023 5.51883 0.673087 5.51401 0.67015 5.50908C0.436411 5.12392 0.074949 4.5283 0.0117166 3.75965C-0.0463774 3.05277 0.112489 2.34453 0.46766 1.73045C0.822831 1.11627 1.35753 0.625298 2.00065 0.324761C2.69023 0.00251672 3.38904 0.000106005 3.82978 0.000106005ZM10.7234 2.55321H3.82978C3.37687 2.55321 3.20301 2.5811 3.08147 2.63793C2.91338 2.71637 2.77223 2.84546 2.67786 3.00862C2.58348 3.1719 2.5408 3.36107 2.55632 3.55045C2.56523 3.65899 2.60949 3.78314 2.87049 4.2136C2.87594 4.22262 2.88129 4.23175 2.88653 4.24087L10.7234 17.9254V2.55321ZM13.2766 2.55321V17.993L21.2949 4.21916C21.3854 4.05474 21.4468 3.81712 21.4468 3.57447C21.4468 3.37764 21.406 3.20671 21.3147 3.03054C21.219 2.89286 21.1607 2.81998 21.1119 2.77006C21.0701 2.72738 21.0379 2.70452 20.9924 2.68334C20.8028 2.59494 20.6088 2.55321 20.2979 2.55321H13.2766Z"/>
+      </svg>
+    `}
+
+    ${props.strikethrough && $h`
+      <div class="strikethrough-line"></div>
+    `}
+  </span>
+</template>
+
+<style>
+.app-number {
+  position: relative;
+}
+.app-number svg {
+  margin-left: 0.2em;
+  margin-right: 0;
+}
+.app-number svg:first-child {
+  margin-left: 0;
+  margin-right: 0.2em;
+}
+.app-number .strikethrough-line {
+  position: absolute;
+  width: 100%;
+  height: 0.07em;
+  background-color: currentColor;
+  top: 50%;
+  right: 0;
+  border: 0.05em solid white;
+  pointer-events: none;
+}
+</style>
+
+<script>
+export default (props) => {
+  const type = props.type ?? 'number';
+  const currency = props.currency ?? 'TON';
+  const c = new Intl.NumberFormat(props.locale, { style: 'currency', currency });
+  const p = new Intl.NumberFormat(props.locale, { style: 'percent' });
+  const n = new Intl.NumberFormat(props.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const currencySymbolPosition = (new Intl.NumberFormat(props.locale, { style: 'currency', currency, currencyDisplay: 'code' })).format(99).indexOf(currency) === 0 ? 'before' : 'after';
+
+  function formattedValue() {
+    switch (props.type) {
+      case 'currency':
+        return currency === 'TON' ?
+            n.format(Number(props.value)) :
+            c.format(Number(props.value));
+        break;
+      case 'percent':
+        return p.format(Number(props.value));
+        break;
+      default:
+        return n.format(Number(props.value));
+    }
+  }
+
+  return $render;
+}
+</script>
