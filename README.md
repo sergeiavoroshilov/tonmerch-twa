@@ -19,6 +19,8 @@ npm install
 * 🔧 `dev` - run development server
 * 🔧 `build` - build web app for production
 
+⚠️ This repository is for code review only. Application will not work without API
+
 ## Vite
 
 There is a [Vite](https://vitejs.dev) bundler setup. It compiles and bundles all "front-end" resources. You should work only with files located in `/src` folder. Vite config located in `vite.config.js`.
