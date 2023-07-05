@@ -4,6 +4,7 @@ Telegram Web Application of online shop.
 
 * [@tonmerch_bot](https://t.me/tonmerch_bot) - you can buy real goods with Toncoin on the *mainnet*
 * [@tonmerch_test_bot](https://t.me/tonmerch_test_bot) - you can try the whole functions of bot with Toncoin on the *testnet*. Real products will not send to you.
+* [presentation for TWA Challenge](https://docs.google.com/presentation/d/1CLZ7SbvWfKEVdaf-6NZ1ep-mC4NuEy7r7TCh3dhUpgw/edit?usp=sharing)
 
 ## Install Dependencies
 
@@ -24,4 +25,6 @@ There is a [Vite](https://vitejs.dev) bundler setup. It compiles and bundles all
 
 ## Documentation & Resources
 
+* [About Telegram Bots](https://core.telegram.org/bots)
 * [Framework7 Core Documentation](https://framework7.io/docs/)
+* [Telegram Design System](https://www.figma.com/community/file/988466927624217947/Telegram-Design-System)
